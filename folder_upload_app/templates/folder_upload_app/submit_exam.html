@@ -1,0 +1,132 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin Học Cơ Sở</title>
+    <link rel="stylesheet" href="https://unpkg.com/filepond/dist/filepond.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+        }
+
+        h1 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        h1 img {
+            margin-bottom: 10px;
+            height: 200px; /* Adjust the height as needed */
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 60%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <img src="{% static 'folder_upload_app/images/logo.png' %}" alt="Logo">
+        Tin Học Cơ Sở: Nộp bài
+    </h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="room_no">Room No.:</label>
+            <input type="text" id="room_no" name="room_no" required>
+        </div>
+        <div class="form-group">
+            <label for="student_id">Student ID:</label>
+            <input type="text" id="student_id" name="student_id" required>
+        </div>
+        <div class="form-group">
+            <label for="compressed_file" style="font-weight: bold; margin-bottom: 10px; color: red;">Trường hợp 1.</label>
+                        <label for="compressed_file" style="font-weight: bold; margin-bottom: 10px; color: blue;">Nếu chỉ có 3 files Word, Excel, Python, bạn hãy upload từng file và submit.</label>
+            <label for="word_file">- Word File:</label>
+            <input type="file" id="word_file" name="word_file" accept=".doc, .docx">
+        </div>
+        <div class="form-group">
+            <label for="excel_file">- Excel File:</label>
+            <input type="file" id="excel_file" name="excel_file" accept=".xls, .xlsx">
+        </div>
+        <div class="form-group">
+            <label for="python_file">- Python File:</label>
+            <input type="file" id="python_file" name="python_file" accept=".py">
+        </div>
+        <div class="form-group">
+            <label for="compressed_file" style="font-weight: bold; margin-bottom: 10px; color: red;">Trường hợp 2.</label>
+            <label for="compressed_file" style="font-weight: bold; margin-bottom: 10px; color: blue;">Nếu có nhiều hơn 3 files, bạn hãy nén folder lại, upload và sau đó submit.</label>
+            <label for="compressed_file">Compressed File (zip/rar):</label>
+            <input type="file" id="compressed_file" name="compressed_file" accept=".zip, .rar">
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Submit Exam">
+        </div>
+    </form>
+    <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-validate/dist/filepond-plugin-file-validate.js"></script>
+    <script>
+        // Enable FilePond on the input elements
+        const inputElements = document.querySelectorAll('input[type="file"]');
+        FilePond.create(inputElements, {
+            allowMultiple: false,
+            allowDirectories: false,
+            allowProcess: true,
+            maxFiles: 1,
+            server: {
+                process: {
+                    url: '/upload',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    onload: (response) => {
+                        console.log('Server response:', response);
+                        // Handle further actions if needed
+                    }
+                },
+                revert: null,
+            },
+        });
+    </script>
+</body>
+</html>
